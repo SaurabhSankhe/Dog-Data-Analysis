@@ -2,7 +2,7 @@
 
 Applied Multivariate techniques to analyze Dog Data Set and found compelling insights. Applied K-means clustering to find which Canine Group IndianWolf is closely related to. 
 
-Applied PCA to reduce the dimensions of the data. 
+Applied Factor Analysis and PCA analysis to reduce the dimensions of the data i.e find least number of columns that account for maximum variance. 
 
 Created and applied LDA and Logistic Regression models to predict the gender of dogs with Species as Thaidogs
 
