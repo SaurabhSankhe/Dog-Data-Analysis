@@ -1,0 +1,284 @@
+---
+title: "R Notebook"
+author: "Saurabh Sankhe"
+output:
+  word_document: default
+  html_notebook: default
+---
+
+
+```{r}
+#Loading the dataset
+df <- read_excel("C:/Users/Saurabh/Desktop/Sem-2 Course Documents/Multivariate Analysis/Lectures/Final/Final_Data.xlsx")
+
+#Printing the dummary of data
+summary(df)
+
+#Converting CanioneGroup to factor variable
+df$CanineGroup <- as.factor(df$CanineGroup)
+
+#Printig the levels of Canine Group
+levels(df$CanineGroup)
+
+#Changing Gender to Factor variable
+df$Gender <- as.factor(df$Gender)
+
+#Printing the levels of Gender to Console
+levels(df$Gender)
+
+#Checking different groups for Canine
+levels(df$CanineGroup)
+
+#Assigning different colors as per CanineGroup
+my_cols <- c("#FF0000", "#0000FF","#228B22","#00FF00","#A9A9A9")
+
+
+#Printing Scatterplot for X1 to X9
+pairs(df[,c(2:10)], pch = c(1,16,9,12,14)[as.numeric(df$CanineGroup)], cex = 0.5, col = my_cols[df$CanineGroup], )
+legend(-0.003,1.07,c("Cuons","GoldenJackal","IndianWolves","ModernDog","ThaiDogs"),pch=c(1,16,9,12,14), cex=0.7, text.font=2)
+
+
+```
+
+Answer2:
+```{r}
+
+#Calculating Distance Matrix
+dist.df <- dist(df[,c(2:10)],method='euclidean')
+
+
+```
+
+Answer3:
+```{r}
+#Applying PCA function on the dataset
+pca.df <- prcomp(df[,c(2:10)], scale=TRUE)
+
+#Printing the results of pca to console
+pca.df
+
+#Printing the summary of the pca to console
+summary(pca.df)
+
+```
+We get from summary the std deviation, Proportion of Variance and the cummulative variance.
+If we look at PCA summary we get 92% variance in the first 3 columns. Thus, we can use these 3 variables instead of X1 to X9
+
+Now,Visualizing the results of PCA
+
+```{r}
+#Importing the required libraries
+library(factoextra)
+
+#Printing the Scree plot of PCA to console
+fviz_eig(pca.df)
+
+```
+
+Answer 4.
+```{r}
+#Changing levels of Gender to 0,1,2 
+levels(df$Gender) <- c(0,1,2) 
+
+#Changing Gender from ctegorical to numerical
+df$Gender <- as.numeric(df$Gender)
+
+#Creating matrix with scaled values
+matstd.df <- scale(df[,2:11])
+
+#Applying Kmeans for predicting 5 groups with 5 random points as starting points
+(kmeans5.df <- kmeans(matstd.df,5,nstart = 5))
+kmeans5.df$cluster
+
+##Applying Kmeans for predicting 5 groups with 10 random points as starting points
+(kmeans10.df <- kmeans(matstd.df,5,nstart = 10))
+kmeans10.df$cluster
+
+##Applying Kmeans for predicting 5 groups with 15 random points as starting points
+(kmeans15.df <- kmeans(matstd.df,5,nstart = 15))
+kmeans15.df$cluster
+
+```
+
+If we look at the above results we can see that for maximum number of times we get cluster 1 with cluster 5 for datapoints i.e For IndianWolves we are getting close relation ship with Modern Dogs
+
+```{r}
+#Converting gender back to factor variable
+df$Gender <- as.factor(df$Gender)
+```
+
+Answer7: For Cuons
+```{r}
+#Extracting dfata for cuons
+df.cuons <- df[df$CanineGroup=='Cuons',]
+
+#Dropping CanineGroup column and storing it in a dataframe
+df.cuons <- df.cuons[,-1]
+
+#Changing the levels to 0&1 i.e Females and Males
+levels(df.cuons$Gender) <- c(0,1,1)
+
+#Applying Logistic regression to with all the variables for Cuons
+fit.cuons <- glm(Gender~.,data=df.cuons,family = 'binomial')
+
+#Applting stepwise regression to find best variables
+final.fit.cuons <- step(fit.cuons)
+
+```
+For cuons we get X3,X5,X6,X9 as most contributing variables to predict gender
+
+For ModernDog
+```{r}
+#Extracting dfata for cuons
+df.moderndog <- df[df$CanineGroup=='ModernDog',]
+
+#Dropping CanineGroup column and storing it in a dataframe
+df.moderndog <- df.moderndog[,-1]
+
+#Changing the levels to 0&1 i.e Females and Males
+levels(df.moderndog$Gender) <- c(0,1,1)
+
+#Applying Logistic regression to with all the variables for Cuons
+fit.moderndog <- glm(Gender~.,data=df.moderndog,family = 'binomial')
+
+#Applting stepwise regression to find best variables
+final.fit.moderndog <- step(fit.moderndog)
+
+```
+For ModernDog we get variables X4,X8,X1,X7 as most contributing variables
+
+For GoldenJackal
+```{r}
+#Extracting dfata for cuons
+df.GoldenJackal <- df[df$CanineGroup=='GoldenJackal',]
+
+#Dropping CanineGroup column and storing it in a dataframe
+df.GoldenJackal <- df.GoldenJackal[,-1]
+
+#Changing the levels to 0&1 i.e Females and Males
+levels(df.GoldenJackal$Gender) <- c(0,1,1)
+
+#Applying Logistic regression to with all the variables for Cuons
+fit.GoldenJackal <- glm(Gender~.,data=df.GoldenJackal,family = 'binomial')
+
+#Applting stepwise regression to find best variables
+final.fit.GoldenJackal <- step(fit.GoldenJackal)
+
+```
+From the above results we can say that for GoldenJackal we have X1,X6,X9 as he most contributing variables
+
+For IndianWolves
+```{r}
+#Extracting dfata for cuons
+df.IndianWolves <- df[df$CanineGroup=='IndianWolves',]
+
+#Dropping CanineGroup column and storing it in a dataframe
+df.IndianWolves <- df.IndianWolves[,-1]
+
+#Changing the levels to 0&1 i.e Females and Males
+levels(df.IndianWolves$Gender) <- c(0,1,1)
+
+#Applying Logistic regression to with all the variables for Cuons
+fit.IndianWolves <- glm(Gender~.,data=df.IndianWolves,family = 'binomial')
+
+#Applting stepwise regression to find best variables
+final.fit.IndianWolves <- step(fit.IndianWolves)
+
+```
+For IndianWolves we get most contributing factors as X7,X5,X2.
+
+If we analyze the above results we get most frequent variables as X1,X5,X6,X7,X9 as the contributing variables
+
+Hence we can fit a logistic regression with variables X1,X5,X6,X7,X9,X2
+
+```{r}
+#Verifying the above results
+df.all.except.thaidogs <- df[!(df$CanineGroup =='ThaiDogs'),]
+
+#Dropping CanineGroup column and storing it in a dataframe
+df.all.except.thaidogs <- df.all.except.thaidogs[,-1]
+
+#Changing the levels to 0&1 i.e Females and Males
+levels(df.all.except.thaidogs$Gender) <- c(0,1,1)
+
+#Applying Logistic regression to with all the variables for Cuons
+fit.all.except.thaidogs <- glm(Gender~.,data=df.all.except.thaidogs,family = 'binomial')
+
+#Applting stepwise regression to find best variables
+final.fit.all.except.thaidogs <- step(fit.all.except.thaidogs)
+
+
+```
+From above results we get that X2 is the contributing variable. Thus we fit the new model with minimum number of parameters 
+
+Answer9:
+
+```{r}
+#Training the model with entire data and parameters X1,X5,X6,X7,X9,X2
+df.all.except.thaidogs <- df[!(df$CanineGroup =='ThaiDogs'),]
+
+#Dropping CanineGroup column and storing it in a dataframe
+df.all.except.thaidogs <- df.all.except.thaidogs[,-1]
+
+#Extracting the relevant columns
+df.all.except.thaidogs <- df.all.except.thaidogs[,c('X1','X5','X6','X7','X9','X2','Gender')]
+
+
+#Changing the levels to 0&1 i.e Females and Males
+levels(df.all.except.thaidogs$Gender) <- c(0,1,1)
+
+#Applying Logistic regression to with all the variables for Cuons
+fit.all.except.thaidogs <- glm(Gender~.,data=df.all.except.thaidogs,family = 'binomial')
+
+#Creating test data
+df.test <- df[(df$CanineGroup =='ThaiDogs'),c('X1','X5','X6','X7','X9','X2','Gender')]
+
+#Predicting the values
+predicted_values <- predict(fit.all.except.thaidogs,newdata = df.test[,-c(7)])
+
+#Predicting the values of Male & Female
+predicted_values <- as.factor(ifelse(test=as.numeric(predicted_values>0.5) == 0, yes="Male", no="Female"))
+
+#Printing Values to console
+predicted_values
+
+#Replacing all the values by predicted values
+df[df$CanineGroup=='ThaiDogs',]$Gender<- as.factor(ifelse(test=as.numeric(predicted_values>0.5) == 0, yes=2, no=1))
+```
+
+
+Answer10:
+We have to create a linear regression model to predict Mandible Length i.e X1
+
+```{r}
+#Extracting al the data except for Thaidogs
+names(df)
+df.all.except.thaidogs <- df[!(df$CanineGroup =='ThaiDogs'),c(2:10)]
+
+#Creating the model with X1 against all the variables
+fit.lm <- lm(X1~.,data = df.all.except.thaidogs)
+
+#Printing the summary of the model
+summary(fit.lm)
+```
+From the above summary we can say that we get an accuracy of around 95% if we look at adjusted R-squared value.
+
+Now we predict the values for Thai Dogs
+```{r}
+#Creating test data
+df.test.thaidogs <- df[(df$CanineGroup =='ThaiDogs'),c(2:10)]
+
+
+#Predicting the values for X!
+predicted_values <- predict(fit.lm,newdata =df.test.thaidogs[,-c(1)])
+
+
+#Loading the required library 
+library(ggplot2)
+
+#Plotting the predicted values with actual values
+qplot(df.test.thaidogs$X1, predicted_values) + geom_abline(intercept=0, slope=1)
+
+
+```
+
